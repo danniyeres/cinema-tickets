@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDateTime;
 
-public record CreateSessionDto(
+public record SessionRequest(
 
         @NotNull(message = "Movie ID cannot be null")
         @Positive(message = "Movie ID must be positive")

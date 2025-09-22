@@ -29,6 +29,9 @@ public record HallDto(
                 .name(hallDto.name())
                 .rows(hallDto.rows())
                 .seatsPerRow(hallDto.seatsPerRow())
+                .seats(hallDto.seats().stream()
+                        .map(SeatDto::toEntity)
+                        .toList())
                 .build();
     }
 }

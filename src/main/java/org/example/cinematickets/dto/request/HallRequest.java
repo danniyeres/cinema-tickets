@@ -3,7 +3,7 @@ package org.example.cinematickets.dto.request;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-public record HallCreationDto(
+public record HallRequest(
 
         @NotNull(message = "Hall name cannot be null")
         String name,

@@ -44,7 +44,26 @@ public class TicketBookingService {
         return TicketDto.fromEntity(savedTicket);
     }
 
+    public TicketDto getTicketById(Long ticketId) {
+        var ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new IllegalArgumentException("Ticket with id " + ticketId + " not found"));
+        return TicketDto.fromEntity(ticket);
+    }
+
     public List<Ticket> getBookingsBySession(Long sessionId) {
         return ticketRepository.findAllBySessionId(sessionId);
+    }
+
+    public TicketDto markTicketAsPaid(Long ticketId) {
+        var ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new IllegalArgumentException("Ticket with id " + ticketId + " not found"));
+
+        if (ticket.isPaid()) {
+            throw new IllegalStateException("Ticket with id " + ticketId + " is already paid");
+        }
+
+        ticket.setPaid(true);
+        var updatedTicket = ticketRepository.save(ticket);
+        return TicketDto.fromEntity(updatedTicket);
     }
 }

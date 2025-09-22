@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Кино — Vue фронт</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        ul { list-style: none; padding: 0; }
+        li { margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
+        button { margin-top: 5px; }
+        form { margin-top: 20px; }
+        input { margin: 5px; padding: 5px; }
+    </style>
+</head>
+<body>
+<div id="app">
+    <h1>Сеансы фильмов</h1>
+
+    <ul>
+        <li v-for="s in sessions" :key="s.id">
+            🎬 <b>{{ s.movie.title }}</b> — зал: {{ s.hall.name }}
+            <br>
+            🕒 {{ s.startTime }} | 💰 {{ s.price }} ₸
+            <div>
+                <button @click="selectSession(s.id)">Показать брони</button>
+            </div>
+        </li>
+    </ul>
+
+    <div v-if="selectedSessionId">
+        <h2>Брони для сессии #{{ selectedSessionId }}</h2>
+        <ul>
+            <li v-for="b in bookings" :key="b.id">
+                Место: {{ b.seatId }} — {{ b.customerName }} ({{ b.customerEmail }})
+            </li>
+        </ul>
+
+        <h3>Забронировать билет</h3>
+        <form @submit.prevent="bookTicket">
+            <input v-model="booking.customerName" placeholder="Имя" required>
+            <input v-model="booking.customerEmail" placeholder="Email" required>
+            <input v-model.number="booking.seatId" placeholder="ID места" required>
+            <button type="submit">Забронировать</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const { createApp } = Vue;
+
+    createApp({
+        data() {
+            return {
+                sessions: [],
+                bookings: [],
+                selectedSessionId: null,
+                booking: { customerName: '', customerEmail: '', seatId: null }
+            };
+        },
+        methods: {
+            async loadSessions() {
+                try {
+                    const res = await axios.get('http://localhost:8080/api/sessions/all');
+                    this.sessions = res.data;
+                } catch (err) {
+                    console.error("Ошибка при загрузке сеансов:", err);
+                }
+            },
+            async selectSession(id) {
+                this.selectedSessionId = id;
+                try {
+                    const res = await axios.get(`http://localhost:8080/api/bookings/session/${id}`);
+                    this.bookings = res.data;
+                } catch (err) {
+                    console.error("Ошибка при загрузке броней:", err);
+                }
+            },
+            async bookTicket() {
+                try {
+                    const req = {
+                        sessionId: this.selectedSessionId,
+                        seatId: this.booking.seatId,
+                        customerName: this.booking.customerName,
+                        customerEmail: this.booking.customerEmail
+                    };
+                    await axios.post('http://localhost:8080/api/bookings', req);
+                    alert("Билет забронирован!");
+                    this.selectSession(this.selectedSessionId); // обновляем список броней
+                } catch (err) {
+                    console.error("Ошибка при бронировании:", err);
+                    alert("Не удалось забронировать билет");
+                }
+            }
+        },
+        mounted() {
+            this.loadSessions();
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>

@@ -5,9 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.example.cinematickets.dto.HallDto;
 import org.example.cinematickets.dto.MovieDto;
 import org.example.cinematickets.dto.SessionDto;
-import org.example.cinematickets.dto.request.CreateSessionDto;
-import org.example.cinematickets.dto.request.HallCreationDto;
-import org.example.cinematickets.dto.request.MovieCreationDto;
+import org.example.cinematickets.dto.request.SessionRequest;
+import org.example.cinematickets.dto.request.HallRequest;
+import org.example.cinematickets.dto.request.MovieRequest;
 import org.example.cinematickets.service.AdminService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,20 +23,20 @@ public class AdminController {
     private final AdminService adminService;
 
     @PostMapping("/halls")
-    public ResponseEntity<HallDto> createHall(@Valid @RequestBody HallCreationDto hallCreationDto) {
-        var hallDto =  adminService.createHall(hallCreationDto);
+    public ResponseEntity<HallDto> createHall(@Valid @RequestBody HallRequest hallRequest) {
+        var hallDto =  adminService.createHall(hallRequest);
         return ResponseEntity.ok(hallDto);
     }
 
     @PostMapping("/movies")
-    public ResponseEntity<MovieDto> addMovie(@Valid @RequestBody MovieCreationDto movieCreationDto) {
-        var movieDto = adminService.addMovie(movieCreationDto);
+    public ResponseEntity<MovieDto> addMovie(@Valid @RequestBody MovieRequest movieRequest) {
+        var movieDto = adminService.addMovie(movieRequest);
         return ResponseEntity.ok(movieDto);
     }
 
     @PostMapping("/sessions")
-    public ResponseEntity<SessionDto> createSession(@Valid @RequestBody CreateSessionDto createSessionDto) {
-        var sessionDto = adminService.createSession(createSessionDto);
+    public ResponseEntity<SessionDto> createSession(@Valid @RequestBody SessionRequest sessionRequest) {
+        var sessionDto = adminService.createSession(sessionRequest);
         return ResponseEntity.ok(sessionDto);
     }
 }

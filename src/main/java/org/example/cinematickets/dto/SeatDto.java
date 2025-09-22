@@ -14,5 +14,13 @@ public record SeatDto(
                 seat.getSeatNumber()
         );
     }
+
+    public static Seat toEntity(SeatDto seatDto) {
+        return Seat.builder()
+                .id(seatDto.id())
+                .rowNumber(seatDto.rowNumber())
+                .seatNumber(seatDto.seatNumber())
+                .build();
+    }
 }
 

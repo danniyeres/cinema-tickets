@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.cinematickets.dto.HallDto;
 import org.example.cinematickets.dto.MovieDto;
 import org.example.cinematickets.dto.SessionDto;
-import org.example.cinematickets.dto.request.CreateSessionDto;
+import org.example.cinematickets.dto.request.SessionRequest;
 import org.example.cinematickets.model.Session;
 import org.example.cinematickets.repository.SessionRepository;
 import org.springframework.stereotype.Service;
@@ -89,18 +89,18 @@ public class SessionService {
                 .toList();
     }
 
-    public SessionDto updateSession(Long id, CreateSessionDto createSessionDto) {
+    public SessionDto updateSession(Long id, SessionRequest sessionRequest) {
         var session = sessionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Session with id " + id + " not found"));
 
-        var movie = MovieDto.toEntity(movieService.getMovieById(createSessionDto.movieId()));
-        var hall = HallDto.toEntity(hallService.getHallById(createSessionDto.hallId()));
+        var movie = MovieDto.toEntity(movieService.getMovieById(sessionRequest.movieId()));
+        var hall = HallDto.toEntity(hallService.getHallById(sessionRequest.hallId()));
 
         session.setMovie(movie);
         session.setHall(hall);
-        session.setStartTime(createSessionDto.startTime());
-        session.setEndTime(createSessionDto.startTime().plusMinutes(movie.getDuration()));
-        session.setPrice(createSessionDto.price());
+        session.setStartTime(sessionRequest.startTime());
+        session.setEndTime(sessionRequest.startTime().plusMinutes(movie.getDuration()));
+        session.setPrice(sessionRequest.price());
 
         Session updatedSession = sessionRepository.save(session);
         return SessionDto.fromEntity(updatedSession);
